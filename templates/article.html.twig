@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+  <link href="{{ asset('article.css') }}"rel="stylesheet" />
+{% endblock %}
+
+{% block title %} {{article.nom}}  {% endblock %}
+
+{% block body %}
+
+<div class=" container">
+
+<h1 class="test"> {{article.nom}} </h1>
+<h4> {{article.description}} </h4>
+{{form_start(formSearch)}}
+{{form_end(formSearch)}}
+<table>
+  <tr>
+     <th {% if lAvis.isSorted('a.date') %} class="sorted"{% endif %}>
+    {{ knp_pagination_sortable(lAvis, 'Tri par date','a.date') }}
+  </th>
+  <th {% if lAvis.isSorted('a.note') %} class="sorted"{% endif %}>
+    {{ knp_pagination_sortable(lAvis, 'Tri par note','a.note') }}
+  </th>
+  </tr>
+</table>
+    {% for avis in lAvis %}
+      <ul class="list-unstyled">
+
+        <li class="media" style="border: solid;padding:1em;">
+          {% if avis.photo is not null %}
+            <img class="align-self-center mr-3" src="/img/{{ avis.photo }}" alt="image" style="max-width:150px; max-height: 200px;" >
+          {% endif %}
+          <div class="media-body">
+            <h5 class="mt-0 mb-1">{{avis.auteur}} {{avis.note}}/10</h5>
+            <p style="text-align: right">Le {{avis.date|date("d/m/Y")}} à {{avis.date|date("G:i:s")}}  </p>
+            {{ avis.commentaire }}
+          </div>
+        </li>
+      </ul>
+    {% endfor %}
+
+    <div class="pagination">
+      {{ knp_pagination_render(lAvis, '@KnpPaginator/Pagination/twitter_bootstrap_v4_pagination.html.twig') }}
+    </div>
+
+    <div id="formNewComment" style="border:solid; padding: 1em;">
+      <h3> Ecrire un commentaire </h3>
+      {{form_start(form)}}
+        {{form_row(form.auteur)}}
+
+        {{form_label(form.note)}}<br>
+        <div id="notation">
+          {% for i in 0..10 %}
+              <span>{{ i }}</span>
+          {% endfor %}
+        </div>
+        {{form_widget(form.note)}}
+
+        {{form_row(form.email)}}
+
+        {{form_row(form.commentaire)}}
+
+        {{form_row(form.photo)}}
+
+        <button class="btn btn-primary">Publier</button>
+      {{form_end(form)}}
+    </div>
+
+</div>
+
+{% endblock %}
